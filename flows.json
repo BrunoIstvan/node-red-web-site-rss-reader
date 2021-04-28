@@ -1,0 +1,1432 @@
+[
+    {
+        "id": "830964c5.bd439",
+        "type": "tab",
+        "label": "Web Requests",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "22721045.39c4b",
+        "type": "template",
+        "z": "830964c5.bd439",
+        "name": "/insert-delete-feed",
+        "field": "template.body",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "\n<div class=\"container\">\n\n<h1>Feed</h1>\n\n    <div class=\"row\">\n        <div class=\"col-md-6\">\n            <table class=\"table table-hover\">\n              <thead>\n                <tr>\n                  <th scope=\"col\">Name</th>\n                  <th scope=\"col\">Url</th>\n                  <th scope=\"col\">Edit</th>\n                  <th scope=\"col\">Delete</th>\n                </tr>\n              </thead>\n              <tbody>\n                {{#payload}}\n                <tr>\n                  <td>{{name}}</td>\n                  <td>{{url}}</td>\n                  <td><a href=\"/monitor/feed/edit/{{rowid}}\" class=\"btn btn-outline-info\">Edit</a></td>\n                  <td><a href=\"/monitor/feed/delete/{{rowid}}\" class=\"btn btn-outline-danger\">Delete</a></td>\n                </tr>\n                {{/payload}}\n              </tbody>\n            </table>\n        </div>\n        <div class=\"col-md-6\">\n            <form action=\"/monitor/feed\" method=\"POST\">\n                \n                <div class=\"form-group\">\n                  <label for=\"name\">Name</label>\n                  <input type=\"text\" class=\"form-control\" id=\"name\" name=\"name\">\n                </div>\n                \n                <div class=\"form-group\">\n                  <label for=\"url\">Url</label>\n                  <input type=\"text\" class=\"form-control\" id=\"url\" name=\"url\">\n                </div>\n                \n                <button type=\"submit\" class=\"btn btn-primary\">Save</button>\n                \n            </form>            \n        </div>\n    </div>\n\n    \n</div>\n",
+        "output": "str",
+        "x": 730,
+        "y": 100,
+        "wires": [
+            [
+                "ef9268d7.df55c8"
+            ]
+        ]
+    },
+    {
+        "id": "f6ce6de3.a0048",
+        "type": "http in",
+        "z": "830964c5.bd439",
+        "name": "feed LIST ALL",
+        "url": "/monitor/feed",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 110,
+        "y": 80,
+        "wires": [
+            [
+                "e909940b.ed11b8"
+            ]
+        ]
+    },
+    {
+        "id": "e909940b.ed11b8",
+        "type": "sqlite",
+        "z": "830964c5.bd439",
+        "mydb": "90cbba76.eb3c9",
+        "sqlquery": "fixed",
+        "sql": "SELECT rowid, * FROM feed",
+        "name": "db-feed",
+        "x": 460,
+        "y": 40,
+        "wires": [
+            [
+                "22721045.39c4b",
+                "534359d9.5da5c8"
+            ]
+        ]
+    },
+    {
+        "id": "534359d9.5da5c8",
+        "type": "debug",
+        "z": "830964c5.bd439",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 710,
+        "y": 20,
+        "wires": []
+    },
+    {
+        "id": "5ad194c7.326994",
+        "type": "http in",
+        "z": "830964c5.bd439",
+        "name": "feed INSERT",
+        "url": "/monitor/feed",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 110,
+        "y": 120,
+        "wires": [
+            [
+                "ab9a1481.8bc43"
+            ]
+        ]
+    },
+    {
+        "id": "a4763017.9e18e8",
+        "type": "sqlite",
+        "z": "830964c5.bd439",
+        "mydb": "90cbba76.eb3c9",
+        "sqlquery": "msg.topic",
+        "sql": "SELECT * FROM feed",
+        "name": "db-feed",
+        "x": 460,
+        "y": 140,
+        "wires": [
+            [
+                "e909940b.ed11b8"
+            ]
+        ]
+    },
+    {
+        "id": "ab9a1481.8bc43",
+        "type": "template",
+        "z": "830964c5.bd439",
+        "name": "INSERT ",
+        "field": "topic",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "INSERT INTO feed VALUES ('{{payload.name}}', '{{{payload.url}}}')",
+        "output": "str",
+        "x": 280,
+        "y": 120,
+        "wires": [
+            [
+                "a4763017.9e18e8"
+            ]
+        ]
+    },
+    {
+        "id": "ed572ab6.3576f",
+        "type": "http in",
+        "z": "830964c5.bd439",
+        "name": "feed DELETE",
+        "url": "/monitor/feed/delete/:rowid",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 110,
+        "y": 160,
+        "wires": [
+            [
+                "2bdcd6ca.516452"
+            ]
+        ]
+    },
+    {
+        "id": "2bdcd6ca.516452",
+        "type": "template",
+        "z": "830964c5.bd439",
+        "name": "DELETE ",
+        "field": "topic",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "DELETE FROM feed WHERE rowid = {{req.params.rowid}}",
+        "output": "str",
+        "x": 280,
+        "y": 160,
+        "wires": [
+            [
+                "a4763017.9e18e8"
+            ]
+        ]
+    },
+    {
+        "id": "bc2fa077.2da9c8",
+        "type": "comment",
+        "z": "830964c5.bd439",
+        "name": "Feed",
+        "info": "",
+        "x": 90,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "b0d88e49.f5a42",
+        "type": "template",
+        "z": "830964c5.bd439",
+        "name": "/keyword",
+        "field": "template.body",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "\n<div class=\"container\">\n\n<h1>Keyword</h1>\n\n    <div class=\"row\">\n        <div class=\"col-md-6\">\n            <table class=\"table table-hover\">\n              <thead>\n                <tr>\n                  <th scope=\"col\">Expression</th>\n                  <th scope=\"col\">Delete</th>\n                </tr>\n              </thead>\n              <tbody>\n                {{#payload}}\n                <tr>\n                  <td>{{expression}}</td>\n                  <td><a href=\"/monitor/keyword/delete/{{rowid}}\" class=\"btn btn-outline-danger\">Delete</a></td>\n                </tr>\n                {{/payload}}\n              </tbody>\n            </table>\n        </div>\n        <div class=\"col-md-6\">\n            <form action=\"/monitor/keyword\" method=\"POST\">\n                \n                <div class=\"form-group\">\n                  <label for=\"expression\">Expression</label>\n                  <input type=\"text\" class=\"form-control\" id=\"expression\" name=\"expression\">\n                </div>\n                \n                <button type=\"submit\" class=\"btn btn-primary\">Save</button>\n                \n            </form>            \n        </div>\n    </div>\n\n\n</div>\n",
+        "output": "str",
+        "x": 800,
+        "y": 300,
+        "wires": [
+            [
+                "ef9268d7.df55c8"
+            ]
+        ]
+    },
+    {
+        "id": "d578b3f7.78964",
+        "type": "http in",
+        "z": "830964c5.bd439",
+        "name": "keyword GET",
+        "url": "/monitor/keyword",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 110,
+        "y": 340,
+        "wires": [
+            [
+                "6db060ff.e66438"
+            ]
+        ]
+    },
+    {
+        "id": "6db060ff.e66438",
+        "type": "sqlite",
+        "z": "830964c5.bd439",
+        "mydb": "90cbba76.eb3c9",
+        "sqlquery": "fixed",
+        "sql": "SELECT rowid, * FROM keyword",
+        "name": "db-keyword",
+        "x": 630,
+        "y": 340,
+        "wires": [
+            [
+                "b0d88e49.f5a42",
+                "7b2c6e0f.0e4cc8"
+            ]
+        ]
+    },
+    {
+        "id": "7b2c6e0f.0e4cc8",
+        "type": "debug",
+        "z": "830964c5.bd439",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 810,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "8d1a1ff3.aa9628",
+        "type": "http in",
+        "z": "830964c5.bd439",
+        "name": "keyword INSERT",
+        "url": "/monitor/keyword",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 120,
+        "y": 380,
+        "wires": [
+            [
+                "7b97996b.f13338"
+            ]
+        ]
+    },
+    {
+        "id": "c899133.d1fe67",
+        "type": "sqlite",
+        "z": "830964c5.bd439",
+        "mydb": "90cbba76.eb3c9",
+        "sqlquery": "msg.topic",
+        "sql": "SELECT * FROM feed",
+        "name": "db-keyword",
+        "x": 450,
+        "y": 400,
+        "wires": [
+            [
+                "6db060ff.e66438"
+            ]
+        ]
+    },
+    {
+        "id": "7b97996b.f13338",
+        "type": "template",
+        "z": "830964c5.bd439",
+        "name": "INSERT ",
+        "field": "topic",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "INSERT INTO keyword VALUES ('{{payload.expression}}')",
+        "output": "str",
+        "x": 280,
+        "y": 380,
+        "wires": [
+            [
+                "c899133.d1fe67"
+            ]
+        ]
+    },
+    {
+        "id": "d7665b29.b75b38",
+        "type": "http in",
+        "z": "830964c5.bd439",
+        "name": "keyword DELETE",
+        "url": "/monitor/keyword/delete/:rowid",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 120,
+        "y": 420,
+        "wires": [
+            [
+                "903a973.d7d9c68"
+            ]
+        ]
+    },
+    {
+        "id": "903a973.d7d9c68",
+        "type": "template",
+        "z": "830964c5.bd439",
+        "name": "DELETE ",
+        "field": "topic",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "DELETE FROM keyword WHERE rowid = {{req.params.rowid}}",
+        "output": "str",
+        "x": 280,
+        "y": 420,
+        "wires": [
+            [
+                "c899133.d1fe67"
+            ]
+        ]
+    },
+    {
+        "id": "9ad743e9.577ee8",
+        "type": "comment",
+        "z": "830964c5.bd439",
+        "name": "Keyword",
+        "info": "",
+        "x": 100,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "af2e99f6.0a3928",
+        "type": "http in",
+        "z": "830964c5.bd439",
+        "name": "feed GET",
+        "url": "/monitor/feed/edit/:rowid",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 100,
+        "y": 200,
+        "wires": [
+            [
+                "af3afa79.a65508"
+            ]
+        ]
+    },
+    {
+        "id": "af3afa79.a65508",
+        "type": "template",
+        "z": "830964c5.bd439",
+        "name": "SELECT ",
+        "field": "topic",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "SELECT rowid, * FROM feed WHERE rowid = {{req.params.rowid}}",
+        "output": "str",
+        "x": 280,
+        "y": 200,
+        "wires": [
+            [
+                "36aa8a1a.dbcb36"
+            ]
+        ]
+    },
+    {
+        "id": "36aa8a1a.dbcb36",
+        "type": "sqlite",
+        "z": "830964c5.bd439",
+        "mydb": "90cbba76.eb3c9",
+        "sqlquery": "msg.topic",
+        "sql": "SELECT * FROM feed",
+        "name": "db-feed",
+        "x": 460,
+        "y": 200,
+        "wires": [
+            [
+                "f1662cee.a19518"
+            ]
+        ]
+    },
+    {
+        "id": "f1662cee.a19518",
+        "type": "template",
+        "z": "830964c5.bd439",
+        "name": "/edit-feed",
+        "field": "template.body",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "\n<div class=\"container\">\n\n<h1>Edit Feed</h1>\n\n    <div class=\"row\">\n        \n        <div class=\"col-md-6\">\n            <form action=\"/monitor/feed/update\" method=\"POST\">\n                \n                {{#payload}}\n                <input type=\"hidden\" class=\"form-control\" id=\"rowid\" name=\"rowid\" value=\"{{rowid}}\">\n                \n                <div class=\"form-group\">\n                  <label for=\"name\">Name</label>\n                  <input type=\"text\" class=\"form-control\" id=\"name\" name=\"name\" value=\"{{name}}\">\n                </div>\n                \n                <div class=\"form-group\">\n                  <label for=\"url\">Url</label>\n                  <input type=\"text\" class=\"form-control\" id=\"url\" name=\"url\" value=\"{{url}}\">\n                </div>\n                {{/payload}}\n                \n                <button type=\"submit\" class=\"btn btn-primary\">Update</button>\n                \n            </form>            \n        </div>\n    </div>\n\n</div>\n",
+        "output": "str",
+        "x": 700,
+        "y": 200,
+        "wires": [
+            [
+                "ef9268d7.df55c8"
+            ]
+        ]
+    },
+    {
+        "id": "f9f582d0.4e7708",
+        "type": "http in",
+        "z": "830964c5.bd439",
+        "name": "feed UPDATE",
+        "url": "/monitor/feed/update",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 110,
+        "y": 240,
+        "wires": [
+            [
+                "78cb8a66.a642d4"
+            ]
+        ]
+    },
+    {
+        "id": "78cb8a66.a642d4",
+        "type": "template",
+        "z": "830964c5.bd439",
+        "name": "UPDATE",
+        "field": "topic",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "UPDATE feed SET name = '{{payload.name}}', url = '{{{payload.url}}}' WHERE rowid = {{payload.rowid}}",
+        "output": "str",
+        "x": 280,
+        "y": 240,
+        "wires": [
+            [
+                "a4763017.9e18e8"
+            ]
+        ]
+    },
+    {
+        "id": "562fccbd.1dca7c",
+        "type": "template",
+        "z": "830964c5.bd439",
+        "name": "/monitor",
+        "field": "template.body",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "\n<div class=\"container\">\n\n<h1>Latest Stories</h1>\n\n    <div class=\"row\">\n        <div class=\"col-md-12\">\n            <table class=\"table table-hover\">\n              <thead>\n                <tr>\n                  <th scope=\"col\">Headline</th>\n                  <th scope=\"col\">Summary</th>\n                  <th scope=\"col\">Pub. Date</th>\n                  <th scope=\"col\">Sent</th>\n                </tr>\n              </thead>\n              <tbody>\n                {{#payload}}\n                <tr>\n                  <td>{{{title}}}</td>\n                  <td>{{{description}}}</td>\n                  <td>{{{pubdate}}}</td>\n                  <td>{{#sent}}<i class=\"fa fa-check\" aria-hidden=\"true\"></i>{{/sent}}</td>\n                  \n                </tr>\n                {{/payload}}\n              </tbody>\n            </table>\n        </div>\n        \n    </div>\n\n    \n</div>\n",
+        "output": "str",
+        "x": 840,
+        "y": 460,
+        "wires": [
+            [
+                "ef9268d7.df55c8"
+            ]
+        ]
+    },
+    {
+        "id": "557793ff.5e81c4",
+        "type": "http response",
+        "z": "830964c5.bd439",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1050,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "5f34ce9e.db97e8",
+        "type": "debug",
+        "z": "830964c5.bd439",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 670,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "39567078.f4731",
+        "type": "http in",
+        "z": "830964c5.bd439",
+        "name": "monitor GET",
+        "url": "/monitor",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 110,
+        "y": 520,
+        "wires": [
+            [
+                "705abf74.00bfd"
+            ]
+        ]
+    },
+    {
+        "id": "2196caa6.8b77e6",
+        "type": "comment",
+        "z": "830964c5.bd439",
+        "name": "Monitor",
+        "info": "",
+        "x": 90,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "110cae93.fb04a9",
+        "type": "http in",
+        "z": "830964c5.bd439",
+        "name": "monitor SEARCH",
+        "url": "/monitor/search",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 120,
+        "y": 600,
+        "wires": [
+            [
+                "705abf74.00bfd"
+            ]
+        ]
+    },
+    {
+        "id": "f1d7543c.6c11a8",
+        "type": "sqlite",
+        "z": "830964c5.bd439",
+        "mydb": "90cbba76.eb3c9",
+        "sqlquery": "msg.topic",
+        "sql": "SELECT rowid, * \nFROM match \nWHERE title LIKE '%{{payload.search}}%' \nOR description LIKE '%{{payload.search}}%' ",
+        "name": "db-match",
+        "x": 500,
+        "y": 520,
+        "wires": [
+            [
+                "5f34ce9e.db97e8",
+                "3b52c986.11320e"
+            ]
+        ]
+    },
+    {
+        "id": "705abf74.00bfd",
+        "type": "template",
+        "z": "830964c5.bd439",
+        "name": "SEARCH",
+        "field": "topic",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "SELECT rowid, * \nFROM match \nWHERE title LIKE '%{{payload.search}}%' \nOR description LIKE '%{{payload.search}}%' \nORDER BY rowid DESC",
+        "output": "str",
+        "x": 340,
+        "y": 520,
+        "wires": [
+            [
+                "f1d7543c.6c11a8"
+            ]
+        ]
+    },
+    {
+        "id": "ef9268d7.df55c8",
+        "type": "template",
+        "z": "830964c5.bd439",
+        "name": "navbar",
+        "field": "template.navbar",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "\n<nav class=\"navbar navbar-expand-lg navbar-light bg-light mb-4\">\n  <a class=\"navbar-brand\" href=\"/monitor\">RSS Monitor</a>\n  <button class=\"navbar-toggler\" type=\"button\" data-toggle=\"collapse\" data-target=\"#navbarSupportedContent\" aria-controls=\"navbarSupportedContent\" aria-expanded=\"false\" aria-label=\"Toggle navigation\">\n    <span class=\"navbar-toggler-icon\"></span>\n  </button>\n\n  <div class=\"collapse navbar-collapse\" id=\"navbarSupportedContent\">\n    <ul class=\"navbar-nav mr-auto\">\n        <li class=\"nav-item\">\n            <a class=\"nav-link\" href=\"/monitor/showcase\">Showcase</a>\n        </li>\n        <li class=\"nav-item\">\n            <a class=\"nav-link\" href=\"/monitor/feed\">Feeds</a>\n        </li>\n        <li class=\"nav-item\">\n            <a class=\"nav-link\" href=\"/monitor/keyword\">Keywords</a>\n        </li>\n      \n    </ul>\n    \n    <form method=\"POST\" action=\"/monitor/search\" class=\"form-inline my-2 my-lg-0\">\n      <input class=\"form-control mr-sm-2\" value=\"{{req.body.search}}\" type=\"search\" id=\"search\" name=\"search\" placeholder=\"Search\" aria-label=\"Search\">\n      <button class=\"btn btn-outline-success my-2 my-sm-0\" type=\"submit\">Search</button>\n    </form>\n    \n  </div>\n</nav>\n",
+        "output": "str",
+        "x": 1050,
+        "y": 240,
+        "wires": [
+            [
+                "fb7b02.4ffa8d"
+            ]
+        ]
+    },
+    {
+        "id": "fb7b02.4ffa8d",
+        "type": "template",
+        "z": "830964c5.bd439",
+        "name": "head",
+        "field": "template.head",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "\n<script src=\"//bootswatch.com/_vendor/jquery/dist/jquery.min.js\"></script>\n<script src=\"//bootswatch.com/_vendor/bootstrap/dist/js/bootstrap.bundle.min.js\"></script>\n<script src=\"//bootswatch.com/_assets/js/custom.js\"></script>\n<link rel=\"stylesheet\" href=\"//stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css\" integrity=\"sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T\" crossorigin=\"anonymous\">\n<link rel=\"stylesheet\" href=\"//stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css\">\n\n",
+        "output": "str",
+        "x": 1050,
+        "y": 280,
+        "wires": [
+            [
+                "a334a5ec.a22ff8"
+            ]
+        ]
+    },
+    {
+        "id": "a334a5ec.a22ff8",
+        "type": "template",
+        "z": "830964c5.bd439",
+        "name": "html",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "<!DOCTYPE html>\n<html>\n    <head>\n        {{{template.head}}}\n    </head>\n<body>\n\n    {{{template.navbar}}}\n    \n    {{{template.body}}}\n    \n</body>\n</html> ",
+        "output": "str",
+        "x": 1050,
+        "y": 320,
+        "wires": [
+            [
+                "557793ff.5e81c4"
+            ]
+        ]
+    },
+    {
+        "id": "f4f53d58.bd213",
+        "type": "http in",
+        "z": "830964c5.bd439",
+        "name": "monitor SHOWCASE",
+        "url": "/monitor/showcase",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 140,
+        "y": 640,
+        "wires": [
+            [
+                "705abf74.00bfd"
+            ]
+        ]
+    },
+    {
+        "id": "3b52c986.11320e",
+        "type": "switch",
+        "z": "830964c5.bd439",
+        "name": "",
+        "property": "req.url",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "/monitor",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "/monitor/showcase",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "/monitor/api/match",
+                "vt": "str"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 3,
+        "x": 670,
+        "y": 520,
+        "wires": [
+            [
+                "562fccbd.1dca7c"
+            ],
+            [
+                "cf1dc65d.645118"
+            ],
+            [
+                "557793ff.5e81c4"
+            ]
+        ]
+    },
+    {
+        "id": "cf1dc65d.645118",
+        "type": "template",
+        "z": "830964c5.bd439",
+        "name": "/showcase",
+        "field": "template.body",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "\n<div class=\"row\">\n    \n    {{#payload}}\n    <div class=\"col-sm-6 col-md-4 col-lg-2\">\n        \n        <div class=\"card bg-light {{#sent}}bg-secondary{{/sent}} m-2\" style=\"max-width: 18rem;\">\n          <div class=\"card-header\" > <a href=\"{{link}}\">{{{title}}}</a></div>\n          <div class=\"card-body text-dark\">\n            <p class=\"card-text\">{{{description}}}</p>\n          </div>\n          <div class=\"card-footer bg-transparent\">{{{pubdate}}}</div>\n        </div>\n        \n    </div>\n    \n    {{/payload}}\n\n</div>\n",
+        "output": "str",
+        "x": 850,
+        "y": 500,
+        "wires": [
+            [
+                "ef9268d7.df55c8"
+            ]
+        ]
+    },
+    {
+        "id": "6abd5066.f0998",
+        "type": "http in",
+        "z": "830964c5.bd439",
+        "name": "monitor API",
+        "url": "/monitor/api/match",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 110,
+        "y": 560,
+        "wires": [
+            [
+                "705abf74.00bfd"
+            ]
+        ]
+    },
+    {
+        "id": "5bb33c54.b0346c",
+        "type": "tab",
+        "label": "RSS-Reader",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "5eee0b00.9604bc",
+        "type": "e-mail",
+        "z": "5bb33c54.b0346c",
+        "d": true,
+        "server": "smtp.gmail.com",
+        "port": "465",
+        "secure": true,
+        "tls": false,
+        "name": "qualqueremail@email.com",
+        "dname": "Mail",
+        "x": 750,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "2d9ef4b1.1bc084",
+        "type": "template",
+        "z": "5bb33c54.b0346c",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "{{#payload}}\n\n{{{pubdate}}}\n{{{description}}}\n\n\nRead more: {{{link}}}\n{{/payload}}\n",
+        "output": "str",
+        "x": 520,
+        "y": 500,
+        "wires": [
+            [
+                "5eee0b00.9604bc",
+                "203b444e.d0afdc"
+            ]
+        ]
+    },
+    {
+        "id": "203b444e.d0afdc",
+        "type": "debug",
+        "z": "5bb33c54.b0346c",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 750,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "e51a133f.7c80f8",
+        "type": "inject",
+        "z": "5bb33c54.b0346c",
+        "name": "inject",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 90,
+        "y": 40,
+        "wires": [
+            [
+                "68fbeead.182f88"
+            ]
+        ]
+    },
+    {
+        "id": "68fbeead.182f88",
+        "type": "sqlite",
+        "z": "5bb33c54.b0346c",
+        "mydb": "90cbba76.eb3c9",
+        "sqlquery": "fixed",
+        "sql": "SELECT rowid, * FROM keyword",
+        "name": "db-keyword",
+        "x": 130,
+        "y": 140,
+        "wires": [
+            [
+                "338c83f4.ca4a6c"
+            ]
+        ]
+    },
+    {
+        "id": "ebca370d.56434",
+        "type": "debug",
+        "z": "5bb33c54.b0346c",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 790,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "338c83f4.ca4a6c",
+        "type": "change",
+        "z": "5bb33c54.b0346c",
+        "name": "keyword",
+        "rules": [
+            {
+                "t": "set",
+                "p": "keyword",
+                "pt": "msg",
+                "to": "$join(payload.expression, \"|\")",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 280,
+        "y": 140,
+        "wires": [
+            [
+                "219b800f.e0ec98"
+            ]
+        ]
+    },
+    {
+        "id": "d70e9db7.b3efd",
+        "type": "comment",
+        "z": "5bb33c54.b0346c",
+        "name": "reading keyword",
+        "info": "",
+        "x": 100,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "219b800f.e0ec98",
+        "type": "sqlite",
+        "z": "5bb33c54.b0346c",
+        "mydb": "90cbba76.eb3c9",
+        "sqlquery": "fixed",
+        "sql": "SELECT rowid, * FROM feed",
+        "name": "db-feed",
+        "x": 440,
+        "y": 140,
+        "wires": [
+            [
+                "7d601273.0b490c"
+            ]
+        ]
+    },
+    {
+        "id": "d77269ed.5e8d08",
+        "type": "comment",
+        "z": "5bb33c54.b0346c",
+        "name": "reading feeds url",
+        "info": "",
+        "x": 440,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "7d601273.0b490c",
+        "type": "split",
+        "z": "5bb33c54.b0346c",
+        "name": "",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "",
+        "x": 590,
+        "y": 140,
+        "wires": [
+            [
+                "206822ef.463646"
+            ]
+        ]
+    },
+    {
+        "id": "c855fe9f.811a1",
+        "type": "http request",
+        "z": "5bb33c54.b0346c",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 290,
+        "y": 220,
+        "wires": [
+            [
+                "98621019.3e33f"
+            ]
+        ]
+    },
+    {
+        "id": "206822ef.463646",
+        "type": "change",
+        "z": "5bb33c54.b0346c",
+        "name": "read url",
+        "rules": [
+            {
+                "t": "move",
+                "p": "payload.url",
+                "pt": "msg",
+                "to": "url",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 120,
+        "y": 220,
+        "wires": [
+            [
+                "c855fe9f.811a1"
+            ]
+        ]
+    },
+    {
+        "id": "98621019.3e33f",
+        "type": "xml",
+        "z": "5bb33c54.b0346c",
+        "name": "",
+        "property": "payload",
+        "attr": "",
+        "chr": "",
+        "x": 450,
+        "y": 220,
+        "wires": [
+            [
+                "f89a1bf5.5c8b2"
+            ]
+        ]
+    },
+    {
+        "id": "f89a1bf5.5c8b2",
+        "type": "change",
+        "z": "5bb33c54.b0346c",
+        "name": "read item",
+        "rules": [
+            {
+                "t": "move",
+                "p": "payload.rss.channel[0].item",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 120,
+        "y": 280,
+        "wires": [
+            [
+                "df5aa637.41d2a"
+            ]
+        ]
+    },
+    {
+        "id": "df5aa637.41d2a",
+        "type": "split",
+        "z": "5bb33c54.b0346c",
+        "name": "split articles",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "",
+        "x": 290,
+        "y": 280,
+        "wires": [
+            [
+                "85e9e7bf.f72be"
+            ]
+        ]
+    },
+    {
+        "id": "85e9e7bf.f72be",
+        "type": "switch",
+        "z": "5bb33c54.b0346c",
+        "name": "match?",
+        "property": "payload.description[0]",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "keyword",
+                "vt": "msg",
+                "case": true
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 460,
+        "y": 280,
+        "wires": [
+            [
+                "6391478c.909a5"
+            ]
+        ]
+    },
+    {
+        "id": "6391478c.909a5",
+        "type": "template",
+        "z": "5bb33c54.b0346c",
+        "name": "INSERT match",
+        "field": "topic",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "INSERT OR IGNORE INTO match VALUES (\n    '{{{payload.link.0}}}', \n    '{{payload.title.0}}', \n    '{{payload.description}}',\n    '{{payload.pubDate}}',\n    0)",
+        "output": "str",
+        "x": 460,
+        "y": 360,
+        "wires": [
+            [
+                "13d57358.efc8dd",
+                "ebca370d.56434"
+            ]
+        ]
+    },
+    {
+        "id": "13d57358.efc8dd",
+        "type": "sqlite",
+        "z": "5bb33c54.b0346c",
+        "mydb": "90cbba76.eb3c9",
+        "sqlquery": "msg.topic",
+        "sql": "SELECT * FROM feed",
+        "name": "db-match",
+        "x": 800,
+        "y": 360,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4cb28c29.e91b84",
+        "type": "comment",
+        "z": "5bb33c54.b0346c",
+        "name": "Notifications",
+        "info": "",
+        "x": 90,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "20aeb5b8.ab14ca",
+        "type": "inject",
+        "z": "5bb33c54.b0346c",
+        "name": "everyday",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "00 07 * * *",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 100,
+        "y": 400,
+        "wires": [
+            [
+                "c0615e67.5eeb28"
+            ]
+        ]
+    },
+    {
+        "id": "f5052bbc.fd3f78",
+        "type": "comment",
+        "z": "5bb33c54.b0346c",
+        "name": "reading matches",
+        "info": "",
+        "x": 100,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "c0615e67.5eeb28",
+        "type": "sqlite",
+        "z": "5bb33c54.b0346c",
+        "mydb": "90cbba76.eb3c9",
+        "sqlquery": "fixed",
+        "sql": "SELECT rowid, * FROM match WHERE sent = 0\n",
+        "name": "db-match",
+        "x": 120,
+        "y": 480,
+        "wires": [
+            [
+                "a4ac380b.5b2878",
+                "f03e4116.bdda68"
+            ]
+        ]
+    },
+    {
+        "id": "a4ac380b.5b2878",
+        "type": "split",
+        "z": "5bb33c54.b0346c",
+        "name": "",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "",
+        "x": 270,
+        "y": 420,
+        "wires": [
+            [
+                "5d3a348.956f7cc"
+            ]
+        ]
+    },
+    {
+        "id": "5d3a348.956f7cc",
+        "type": "template",
+        "z": "5bb33c54.b0346c",
+        "name": "UPDATE match ",
+        "field": "topic",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "UPDATE match SET sent = 1 WHERE rowid = {{payload.rowid}}",
+        "output": "str",
+        "x": 500,
+        "y": 420,
+        "wires": [
+            [
+                "13d57358.efc8dd"
+            ]
+        ]
+    },
+    {
+        "id": "c0fc3b16.28d1f8",
+        "type": "change",
+        "z": "5bb33c54.b0346c",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "Daily Report",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "from",
+                "pt": "msg",
+                "to": "RSS Alert <rss-alert@noreply.com>",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 360,
+        "y": 560,
+        "wires": [
+            [
+                "2d9ef4b1.1bc084"
+            ]
+        ]
+    },
+    {
+        "id": "f03e4116.bdda68",
+        "type": "switch",
+        "z": "5bb33c54.b0346c",
+        "name": "empty?",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "empty"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 280,
+        "y": 480,
+        "wires": [
+            [],
+            [
+                "c0fc3b16.28d1f8"
+            ]
+        ]
+    },
+    {
+        "id": "ad9f3d48.900538",
+        "type": "tab",
+        "label": "db-admin",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "1e5bf9b8.fdc4be",
+        "type": "sqlite",
+        "z": "ad9f3d48.900538",
+        "mydb": "90cbba76.eb3c9",
+        "sqlquery": "msg.topic",
+        "sql": "",
+        "name": "db",
+        "x": 410,
+        "y": 80,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "f54ebc95.6e4a9",
+        "type": "inject",
+        "z": "ad9f3d48.900538",
+        "name": "CREATE feed",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "CREATE TABLE feed (name, url)",
+        "x": 130,
+        "y": 40,
+        "wires": [
+            [
+                "1e5bf9b8.fdc4be"
+            ]
+        ]
+    },
+    {
+        "id": "780adf6b.5565c",
+        "type": "inject",
+        "z": "ad9f3d48.900538",
+        "name": "CREATE keyword",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "CREATE TABLE keyword (expression)",
+        "x": 140,
+        "y": 80,
+        "wires": [
+            [
+                "1e5bf9b8.fdc4be"
+            ]
+        ]
+    },
+    {
+        "id": "a5341628.7b25d8",
+        "type": "inject",
+        "z": "ad9f3d48.900538",
+        "name": "CREATE match",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "CREATE TABLE match (link, title, description, pubdate, sent, UNIQUE(link))",
+        "x": 140,
+        "y": 120,
+        "wires": [
+            [
+                "1e5bf9b8.fdc4be"
+            ]
+        ]
+    },
+    {
+        "id": "35676451.c3d5a4",
+        "type": "inject",
+        "z": "ad9f3d48.900538",
+        "name": "DROP feed",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "DROP TABLE feed",
+        "x": 130,
+        "y": 200,
+        "wires": [
+            [
+                "1e5bf9b8.fdc4be"
+            ]
+        ]
+    },
+    {
+        "id": "8e72c600.cdbee",
+        "type": "inject",
+        "z": "ad9f3d48.900538",
+        "name": "DROP match",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "DROP TABLE match",
+        "x": 130,
+        "y": 280,
+        "wires": [
+            [
+                "1e5bf9b8.fdc4be"
+            ]
+        ]
+    },
+    {
+        "id": "7a998965.4f8a98",
+        "type": "inject",
+        "z": "ad9f3d48.900538",
+        "name": "DROP keyword",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "DROP TABLE keyword",
+        "x": 140,
+        "y": 240,
+        "wires": [
+            [
+                "1e5bf9b8.fdc4be"
+            ]
+        ]
+    },
+    {
+        "id": "90cbba76.eb3c9",
+        "type": "sqlitedb",
+        "db": "/Users/bruno-istvan/Projetos/node-red/monitor.db",
+        "mode": "RWC"
+    }
+]
